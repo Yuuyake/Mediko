@@ -21,14 +21,13 @@ namespace Arcsight_Health_Checker {
     public static class Program {
         static string banner    = Resources.banner;
         static string geckoLoc  = Directory.GetCurrentDirectory() + @"\geckodriver.exe";
-        static string firefoxLoc= "YOUR firefox.exe PATH";
+        static string firefoxLoc= Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"YOUR_FIREFOX_EXE_LOCATION";
         static List<Logger> loggers   = new List<Logger>() {
-            // fill it with ur loggers urls
-            new Logger("YOUR_LOGGER_URLS"),
+            new Logger("YOUR_LOGGER_URLS"),/**/
         };
         static void Main(string[] args) {
             string username = ""; // Console.ReadLine();
-            SecureString password   = new SecureString();
+            SecureString password   = null;
             Console.OutputEncoding  = Encoding.UTF8;
             Console.Title           = "Mediko";
 
@@ -56,14 +55,13 @@ namespace Arcsight_Health_Checker {
             Driver.ffoxDriver = new FirefoxDriver(options);
             Driver.ffoxDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(8);
 
-            printMenu();
-            Console.Clear();
-            Console.WriteLineFormatted(Resources.banner, Color.LightGoldenrodYellow);
-            // Credentials for loginning to arcloggers
-            Console.WriteFormatted("\n\t|Enter Username: ", Color.White); username = Console.ReadLine();
-            Console.WriteFormatted("\t|Enter Password: ",   Color.White); password = Darker();
-
+            //Logger.Blissadmin();
             while (true) {
+                printMenu();
+                Console.Clear();
+                Console.WriteLineFormatted(Resources.banner, Color.LightGoldenrodYellow);
+                Console.WriteFormatted("\n\t|Enter Username: ", Color.White); username = username == "" ? Console.ReadLine() : username;
+                Console.WriteFormatted("\t|Enter Password: ",   Color.White); password = password == null ? Darker() : password;
                 // ===================================================================== Run Driver service, go pages scrap infos
                 Console.WriteLine("\n\n\t> Opening login pages . . .");
                 loggers.ForEach(lg => lg.OpenLogInPage());
@@ -73,29 +71,22 @@ namespace Arcsight_Health_Checker {
                 loggers.ForEach(lg => lg.GetProcInfos());
                 Console.WriteLine("\t> Scraping Event Archives datas . . .");
                 loggers[0].GetArchiveInfos();
-                //password.Dispose();
-                Console.WriteLineFormatted("\n############################################################################################################\n", Color.Gray);
-                Console.WriteLineFormatted("\n################################################   SUMMARY   ###############################################\n", Color.Gray);
+                Console.WriteFormatted("\n\n".PadRight(127, '▬'),Color.Gray);
+                Console.WriteFormatted("\n".PadRight(57, '▬') + "   SUMMARY   " + "▬".PadRight(57, '▬') + "n\n", Color.Gray);
+
                 loggers.ForEach(lg => lg.GetSummary());
-                Console.WriteLineFormatted("\n\n                           ─────────────────────   ALL DONE  ─────────────────────                          ", Color.Red);
+                Console.WriteLineFormatted("\n\n\t\t\t\t─────────────────────   ALL DONE  ─────────────────────", Color.Red);
                 Console.WriteFormatted("\n\n\t\t> Press \"r\" to redo and anything else to quit: ", Color.Yellow);
-                string qu = Console.ReadLine();
-                if (qu == "r") { 
-                    printMenu();
-                    Console.Clear();
-                    Console.WriteLineFormatted(Resources.banner, Color.LightGoldenrodYellow);
-                    Console.WriteFormatted("\n\t|Enter Username: " + username, Color.White);
-                    Console.WriteFormatted("\n\t|Enter Password: " + password.ToString(), Color.White);
-                }
-                else
+                if (Console.ReadLine() != "r") 
                     break;
             }
             Driver.ffoxDriver.Dispose();
+            password.Dispose();
         }
         static void printMenu() {
             List<string> menuItems = new List<string>();
             List<string> descItems = new List<string>();
-            string descTemplate = "\td=delete | a=add | enter=finish ";
+            string descTemplate = "\t use arrows(↑↓) and d=delete | a=add | enter=finish ";
             for (int i = 0; i < loggers.Count; i++) {
                 menuItems.Add(loggers[i].mainPage.PadRight(25, ' '));
                 descItems.Add("                                             ");

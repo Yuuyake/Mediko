@@ -28,6 +28,7 @@ namespace Arcsight_Health_Checker {
             this.adminPage   = mainPage + "/logger/sys_admin.ftl?action=ProcStat";
             this.archivePage = mainPage + "/logger/config_home.ftl?config-page=event_archive_config";
         }
+
         public void SetStatus(List<string> statuses) {
             try {
                 this.name = statuses[0].Substring(0, statuses[0].IndexOf(".int")).ToUpper();
@@ -55,6 +56,7 @@ namespace Arcsight_Health_Checker {
                 Driver.ffoxDriver.ExecuteJS("window.open('" + this.mainPage + "')");
                 var tabs = Driver.ffoxDriver.WindowHandles;
                 Driver.ffoxDriver.SwitchTo().Window(tabs[++(Driver.currTab)]);
+                Driver.ffoxDriver.ExecuteJS("window.open('" + this.mainPage + "')");
                 tabID = Driver.ffoxDriver.CurrentWindowHandle;
                 Console.WriteLineFormatted("\t > DONE: " + this.mainPage, Color.Green);
             }
@@ -73,9 +75,10 @@ namespace Arcsight_Health_Checker {
         /// <param name="tabs"></param>
         public void LogInToPage(string username, SecureString password /*ReadOnlyCollection<string> tabs*/) {
             try {
+                var ntCreds = new System.Net.NetworkCredential(string.Empty, password);
                 Driver.ffoxDriver.SwitchTo().Window(this.tabID);
                 Driver.ffoxDriver.FindElement(By.XPath("//*[@id=\"userName-input\"]")).SendKeys(username);
-                Driver.ffoxDriver.FindElement(By.XPath("//*[@id=\"password-input\"]")).SendKeys(new System.Net.NetworkCredential(string.Empty, password).Password);
+                Driver.ffoxDriver.FindElement(By.XPath("//*[@id=\"password-input\"]")).SendKeys(ntCreds.Password);
                 Driver.ffoxDriver.FindElement(By.XPath("//*[@type=\"button\"]")).Click();
                 Console.WriteLineFormatted("\t > DONE: " + this.mainPage, Color.Green);
             }
@@ -105,7 +108,7 @@ namespace Arcsight_Health_Checker {
                 }
                 var statusRow = Driver.ffoxDriver.FindElements(
                     By.XPath("//*[contains(@id, 'row-0504403158265') and not(contains(@style, 'display: none;'))]")).ToList();
-                var yestDate = DateTime.Now.AddDays(1).ToString("dd/MM/yyyy");
+                var yestDate = DateTime.Now.AddDays(-1).ToString("dd/M/yyyy");
                 foreach (IWebElement rr in statusRow) {
                     var tempArc = new Archive(rr);
                     if (yestDate == tempArc.date)
@@ -115,23 +118,17 @@ namespace Arcsight_Health_Checker {
                 }
                 //print them
                 Console.WriteLineFormatted("\n\tYesterday Archives: \n",Color.Cyan);
-                yestArchives.ForEach(aa => Console.WriteLine(
-                    "\t" +
-                    aa.name.PadRight(55) +
-                    (aa.day + "." + aa.month + "." + aa.year).PadRight(12) +
-                    aa.storageGroup.PadRight(20) +
-                    aa.status.PadRight(12) +
-                    aa.indexStatus.PadRight(12)
-                    ));
+                string arcHeader = 
+                    "Archive Name".PadRight(60) +
+                    "Date".PadRight(12) +
+                    "Storage Group".PadRight(30) +
+                    "Status".PadRight(12) +
+                    "Index Status".PadRight(12);
+                Console.WriteLineFormatted("\t" + arcHeader, Color.LightGoldenrodYellow);
+                yestArchives.ForEach(aa => aa.eprint());
                 Console.WriteLineFormatted("\n\tOlder Archives: \n", Color.Cyan);
-                yestArchives.ForEach(aa => Console.WriteLine(
-                    "\t" +
-                    aa.name.PadRight(55) +
-                    (aa.day + "." + aa.month + "." + aa.year).PadRight(12) +
-                    aa.storageGroup.PadRight(20) +
-                    aa.status.PadRight(12) +
-                    aa.indexStatus.PadRight(12)
-                    ));
+                Console.WriteLineFormatted("\t" + arcHeader,Color.LightGoldenrodYellow);
+                olderArchives.ForEach(aa => aa.eprint());
             }
             catch (Exception ee) {
                 Console.WriteLineFormatted("\t > Exception: Page " + this.archivePage + " is problematic . . .", Color.Red);

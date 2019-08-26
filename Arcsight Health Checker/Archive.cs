@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using OpenQA.Selenium;
 using Console = Colorful.Console;
 
@@ -18,14 +19,14 @@ namespace Arcsight_Health_Checker {
         public Archive(string rowInfo) {
             var rowList = rowInfo.Split(' ');
             try {
-                name    = rowList[0];
-                day     = rowList[1];
-                month   = rowList[2];
-                year    = rowList[3];
-                date    = this.day + "/" + this.month + "/" + this.year;
-                storageGroup = rowList[4];
-                status  = rowList[5];
-                indexStatus  = rowList[6];
+                name    = rowList.ElementAtOrDefault(0) ?? "??"; 
+                day     = rowList.ElementAtOrDefault(1) ?? "??";
+                month   = rowList.ElementAtOrDefault(2) ?? "??";
+                year    = rowList.ElementAtOrDefault(3) ?? "??";
+                status  = rowList.ElementAtOrDefault(5) ?? "??";
+                date = this.day + "." + this.month + "." + this.year;
+                storageGroup = rowList.ElementAtOrDefault(4) ?? "??";
+                indexStatus  = rowList.ElementAtOrDefault(6) ?? "??";
             }
             catch (Exception ee) {
                 Console.WriteLineFormatted("\t > Exception: row " + rowInfo.Replace("\t", " ") + " is problematic . . .", Color.Red);
@@ -41,7 +42,7 @@ namespace Arcsight_Health_Checker {
                 month   = row.FindElement((By.CssSelector("[id*=month-]"))).Text;
                 year    = row.FindElement((By.CssSelector("[id*=year-]"))).Text;
                 status  = row.FindElement((By.CssSelector("[id*=status-]"))).Text;
-                date    = this.day + "/" + this.month + "/" + this.year;
+                date    = this.day + "." + this.month + "." + this.year;
                 storageGroup = row.FindElement((By.CssSelector("[id*=storagegroup-]"))).Text;
                 indexStatus  = row.FindElement((By.CssSelector("[id*=indexstatus-]"))).Text;
             }
@@ -50,6 +51,23 @@ namespace Arcsight_Health_Checker {
                 var error = ee.Message;
                 Console.WriteLineFormatted("\t\t> " + error, Color.Orange);
             }
+        }
+
+        public void eprint() {
+            if( status != "Archived" || indexStatus != "Indexed") {
+                Console.WriteLineFormatted("\t" +
+                    this.name.PadRight(60) +
+                    (this.day + "." + this.month + "." + this.year).PadRight(13) +
+                    this.storageGroup.PadRight(30) +
+                    this.status.PadRight(12) +
+                    this.indexStatus.PadRight(12),Color.Red);
+            }
+            Console.WriteLine("\t" +
+                                this.name.PadRight(60) +
+                                (this.day + "." + this.month + "." + this.year).PadRight(13) +
+                                this.storageGroup.PadRight(30) +
+                                this.status.PadRight(12) +
+                                this.indexStatus.PadRight(12));
         }
     }
 }
