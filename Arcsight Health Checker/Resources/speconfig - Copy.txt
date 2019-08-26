@@ -1,0 +1,12 @@
+﻿{
+  "loggerID": "LOGGER_LOGIN_CREDS",
+  "loggerPass": "LOGGER_LOGIN_CREDS",
+  "csirtMail": "csirt@xx.com",
+  "loggerUrls": [
+    {"url": "YOUR_LOGGER_URL"},
+    {"url": "YOUR_LOGGER_URL"}
+  ],
+  "firefoxLoc": "...\.exe",
+  "chromeLoc": "...\chrome.exe",
+  "ieLoc": "...\ie.exe",
+}
