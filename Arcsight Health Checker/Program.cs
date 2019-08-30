@@ -21,9 +21,9 @@ namespace Arcsight_Health_Checker {
     public static class Program {
         static string banner    = Resources.banner;
         static string geckoLoc  = Directory.GetCurrentDirectory() + @"\geckodriver.exe";
-        static string firefoxLoc= Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"YOUR_FIREFOX_EXE_LOCATION";
+        static string firefoxLoc= Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "FOREFOX_LOC";
         static List<Logger> loggers   = new List<Logger>() {
-            new Logger("YOUR_LOGGER_URLS"),/**/
+            new Logger("LOGGER_URLS"),/**/
         };
         static void Main(string[] args) {
             string username = ""; // Console.ReadLine();
@@ -86,7 +86,7 @@ namespace Arcsight_Health_Checker {
         static void printMenu() {
             List<string> menuItems = new List<string>();
             List<string> descItems = new List<string>();
-            string descTemplate = "\t use arrows(↑↓) and d=delete | a=add | enter=finish ";
+            string descTemplate = "\t use arrows(↑↓) and d=delete | a=add | enter=finish        ";
             for (int i = 0; i < loggers.Count; i++) {
                 menuItems.Add(loggers[i].mainPage.PadRight(25, ' '));
                 descItems.Add("                                             ");

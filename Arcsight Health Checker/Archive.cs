@@ -7,14 +7,14 @@ using Console = Colorful.Console;
 
 namespace Arcsight_Health_Checker {
     class Archive {
-        public string name     = "??";
-        public string day      = "??";
-        public string month    = "??";
-        public string year     = "??";
-        public string status   = "??";
-        public string date     = "??";
-        public string indexStatus  = "??";
-        public string storageGroup = "??";
+        public string name;
+        public string day;
+        public string month;
+        public string year;
+        public string status;
+        public string date;
+        public string indexStatus;
+        public string storageGroup;
 
         public Archive(string rowInfo) {
             var rowList = rowInfo.Split(' ');

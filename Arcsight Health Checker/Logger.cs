@@ -20,7 +20,6 @@ namespace Arcsight_Health_Checker {
         public string adminPage = "unknown";// determined at first decleration
         public string archivePage = "unknown";// determined at first decleration
         public List<Process> procList = new List<Process>();
-
         static List<Archive> yestArchives  = new List<Archive>();
         static List<Archive> olderArchives = new List<Archive>();
         public Logger(string mainPage) {
@@ -28,7 +27,6 @@ namespace Arcsight_Health_Checker {
             this.adminPage   = mainPage + "/logger/sys_admin.ftl?action=ProcStat";
             this.archivePage = mainPage + "/logger/config_home.ftl?config-page=event_archive_config";
         }
-
         public void SetStatus(List<string> statuses) {
             try {
                 this.name = statuses[0].Substring(0, statuses[0].IndexOf(".int")).ToUpper();
@@ -117,16 +115,16 @@ namespace Arcsight_Health_Checker {
                         olderArchives.Add(new Archive(rr));
                 }
                 //print them
-                Console.WriteLineFormatted("\n\tYesterday Archives: \n",Color.Cyan);
-                string arcHeader = 
+                string arcHeader =
                     "Archive Name".PadRight(60) +
                     "Date".PadRight(12) +
                     "Storage Group".PadRight(30) +
                     "Status".PadRight(12) +
                     "Index Status".PadRight(12);
+                Console.WriteLineFormatted("\n\t" + yestArchives[0].date + " Archives: \n",Color.Cyan);
                 Console.WriteLineFormatted("\t" + arcHeader, Color.LightGoldenrodYellow);
                 yestArchives.ForEach(aa => aa.eprint());
-                Console.WriteLineFormatted("\n\tOlder Archives: \n", Color.Cyan);
+                Console.WriteLineFormatted("\n\t" + olderArchives[0].date + " Archives: \n", Color.Cyan);
                 Console.WriteLineFormatted("\t" + arcHeader,Color.LightGoldenrodYellow);
                 olderArchives.ForEach(aa => aa.eprint());
             }
